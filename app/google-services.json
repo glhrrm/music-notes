@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "722692630036",
+    "firebase_url": "https://music-notes-68a35.firebaseio.com",
+    "project_id": "music-notes-68a35",
+    "storage_bucket": "music-notes-68a35.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:722692630036:android:8101450649bb4ccc872901",
+        "android_client_info": {
+          "package_name": "br.edu.ifrs.musicnotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "722692630036-l62bqbnrm0s3bsetgafmdq47rc9cmnbk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.edu.ifrs.musicnotes",
+            "certificate_hash": "4fbb1f4d64b5899f0cf26a5b9e85dc8bdf32c78e"
+          }
+        },
+        {
+          "client_id": "722692630036-6qu8qsnbgcvn7duts4jrp2ptd3rv0cf7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbgDaE9Kqi9uQyJE7XVavVKX1-avtnFXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "722692630036-6qu8qsnbgcvn7duts4jrp2ptd3rv0cf7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
