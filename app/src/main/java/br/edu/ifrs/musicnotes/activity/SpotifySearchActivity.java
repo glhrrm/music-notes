@@ -133,6 +133,8 @@ public class SpotifySearchActivity extends AppCompatActivity implements SearchVi
                 albumCover = images.getJSONObject(1).get("url").toString(); // imagem 300x300px
 
                 String releaseDate = items.getJSONObject(i).get("release_date").toString();
+                // TODO: PODE RETORNAR APENAS O ANO
+                Log.d("album", releaseDate);
                 Calendar c = Calendar.getInstance();
                 c.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(releaseDate));
                 albumYear = c.get(Calendar.YEAR);
@@ -163,6 +165,8 @@ public class SpotifySearchActivity extends AppCompatActivity implements SearchVi
                                         @Override
                                         public void onItemClick(View view, int position) {
                                             Album album = albumList.get(position);
+                                            // TODO: RETORNA ITENS DA 1ª PESQUISA
+                                            Log.d("album", album.toString());
                                             Intent intent = new Intent(getApplicationContext(), AlbumActivity.class);
                                             intent.putExtra("album", album);
                                             startActivity(intent);

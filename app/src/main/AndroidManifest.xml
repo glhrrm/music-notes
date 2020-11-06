@@ -10,16 +10,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar.FullScreen">
-        <activity
-            android:name=".activity.SplashActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar.FullScreen" />
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar.FullScreen">
         <activity android:name=".activity.AlbumActivity" />
         <activity android:name=".activity.SpotifyTokenActivity" />
         <activity android:name=".activity.SpotifySearchActivity" />
-        <activity android:name=".activity.AlbumCreateActivity" />
-        <activity android:name=".activity.AboutActivity" />
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
