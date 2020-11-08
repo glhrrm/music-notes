@@ -1,7 +1,6 @@
 package br.edu.ifrs.musicnotes.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,14 +43,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
         holder.albumName.setText(album.getTitle());
 
-        for (Iterator i = album.getArtists().iterator(); i.hasNext(); ) {
-            holder.artistName.append(i.next().toString());
+        for (Iterator<String> i = album.getArtists().iterator(); i.hasNext(); ) {
+            holder.artistName.append(i.next());
             if (i.hasNext()) holder.artistName.append(", ");
         }
 
         holder.albumYear.setText(String.valueOf(album.getYear()));
 
-        Glide.with(mContext).load(album.getImage()).into(holder.albumCover);
+        Glide.with(mContext).load(album.getImages().get("small")).into(holder.albumCover);
     }
 
     @Override
@@ -71,7 +70,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             artistName = itemView.findViewById(R.id.artistName);
             albumYear = itemView.findViewById(R.id.albumYear);
             albumCover = itemView.findViewById(R.id.albumCover);
-
         }
     }
 }

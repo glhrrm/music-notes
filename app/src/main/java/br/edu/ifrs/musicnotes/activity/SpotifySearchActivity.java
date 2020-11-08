@@ -20,15 +20,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import br.edu.ifrs.musicnotes.R;
-import br.edu.ifrs.musicnotes.listener.RecyclerItemClickListener;
 import br.edu.ifrs.musicnotes.adapter.RecyclerAdapter;
+import br.edu.ifrs.musicnotes.listener.RecyclerItemClickListener;
 import br.edu.ifrs.musicnotes.model.Album;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -42,6 +41,7 @@ public class SpotifySearchActivity extends AppCompatActivity implements SearchVi
     private RecyclerView mRecyclerAlbums;
     private SharedPreferences mSharedPreferences;
     private View mLoadingFragment;
+    private List<Album> mAlbumList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,8 +108,8 @@ public class SpotifySearchActivity extends AppCompatActivity implements SearchVi
     }
 
     public void mountAlbumListView(Response response) {
-        final List<Album> albumList = new ArrayList<>();
-        String albumId = "", albumName = "", albumCover = "";
+        mAlbumList = new ArrayList<>();
+        String albumId, albumName;
         int albumYear;
 
         try {
@@ -130,22 +130,22 @@ public class SpotifySearchActivity extends AppCompatActivity implements SearchVi
                 }
 
                 JSONArray images = new JSONArray(items.getJSONObject(i).getString("images"));
-                albumCover = images.getJSONObject(1).get("url").toString(); // imagem 300x300px
+                String albumCoverSmall = images.getJSONObject(2).get("url").toString(); // imagem 64x64px
+                String albumCoverMedium = images.getJSONObject(1).get("url").toString(); // imagem 300x300px
+                Map<String, String> albumCover = new HashMap<>();
+                albumCover.put("small", albumCoverSmall);
+                albumCover.put("medium", albumCoverMedium);
 
                 String releaseDate = items.getJSONObject(i).get("release_date").toString();
-                // TODO: PODE RETORNAR APENAS O ANO
-                Log.d("album", releaseDate);
-                Calendar c = Calendar.getInstance();
-                c.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(releaseDate));
-                albumYear = c.get(Calendar.YEAR);
+                albumYear = Integer.parseInt(releaseDate.substring(0, 4));
 
-                albumList.add(new Album(albumId, albumName, artistList, albumCover, albumYear));
+                mAlbumList.add(new Album(albumId, albumName, artistList, albumCover, albumYear));
             }
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    RecyclerAdapter adapter = new RecyclerAdapter(getApplicationContext(), albumList);
+                    RecyclerAdapter adapter = new RecyclerAdapter(getApplicationContext(), mAlbumList);
                     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
                     mRecyclerAlbums = findViewById(R.id.recyclerAlbums);
                     mRecyclerAlbums.setLayoutManager(layoutManager);
@@ -164,9 +164,7 @@ public class SpotifySearchActivity extends AppCompatActivity implements SearchVi
 
                                         @Override
                                         public void onItemClick(View view, int position) {
-                                            Album album = albumList.get(position);
-                                            // TODO: RETORNA ITENS DA 1ª PESQUISA
-                                            Log.d("album", album.toString());
+                                            Album album = mAlbumList.get(position);
                                             Intent intent = new Intent(getApplicationContext(), AlbumActivity.class);
                                             intent.putExtra("album", album);
                                             startActivity(intent);
@@ -182,7 +180,7 @@ public class SpotifySearchActivity extends AppCompatActivity implements SearchVi
                 }
             });
 
-        } catch (JSONException | IOException | ParseException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
     }

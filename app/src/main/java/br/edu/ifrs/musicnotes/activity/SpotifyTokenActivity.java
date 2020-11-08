@@ -46,8 +46,6 @@ public class SpotifyTokenActivity extends AppCompatActivity {
                     editor.putString("token", response.getAccessToken());
                     editor.apply();
 
-                    Log.d("starting", "got auth token");
-
                     finish();
                     break;
                 case ERROR:

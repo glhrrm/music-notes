@@ -1,8 +1,5 @@
 package br.edu.ifrs.musicnotes.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +7,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
@@ -47,14 +47,14 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
 
         albumName.setText(mAlbum.getTitle());
 
-        for (Iterator i = mAlbum.getArtists().iterator(); i.hasNext(); ) {
-            artistName.append(i.next().toString());
+        for (Iterator<String> i = mAlbum.getArtists().iterator(); i.hasNext(); ) {
+            artistName.append(i.next());
             if (i.hasNext()) artistName.append(", ");
         }
 
         albumYear.setText(String.valueOf(mAlbum.getYear()));
 
-        Glide.with(this).load(mAlbum.getImage()).into(albumCover);
+        Glide.with(this).load(mAlbum.getImages().get("medium")).into(albumCover);
 
         DatabaseReference albums = mFirebase.child("albums");
         DatabaseReference albumId = albums.child(mAlbum.getId());
