@@ -1,11 +1,11 @@
 package br.edu.ifrs.musicnotes.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.ImageView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 
@@ -24,7 +24,7 @@ public class SplashActivity extends AppCompatActivity {
         Handler handle = new Handler();
         handle.postDelayed(new Runnable() {
             @Override public void run() {
-                startActivity(new Intent(getApplicationContext(), SpotifySearchActivity.class));
+                startActivity(new Intent(getApplicationContext(), SearchActivity.class));
                 finish();
             }
         }, 3000);

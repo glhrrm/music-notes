@@ -2,17 +2,17 @@ package br.edu.ifrs.musicnotes.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.SearchView;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -35,21 +35,21 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class SpotifySearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private static final String ENDPOINT = "https://api.spotify.com/v1/search?";
     private RecyclerView mRecyclerAlbums;
     private SharedPreferences mSharedPreferences;
-    private View mLoadingFragment;
     private List<Album> mAlbumList;
+    private ShimmerFrameLayout mShimmerViewContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_spotify_search);
+        setContentView(R.layout.activity_search);
 
-        mLoadingFragment = findViewById(R.id.loadingFragment);
-        mLoadingFragment.setVisibility(View.GONE);
+        mShimmerViewContainer = findViewById(R.id.shimmer_view_container);
+        mShimmerViewContainer.setVisibility(View.INVISIBLE);
 
         SearchView searchView = findViewById(R.id.searchAlbum);
         searchView.setOnQueryTextListener(this);
@@ -59,7 +59,10 @@ public class SpotifySearchActivity extends AppCompatActivity implements SearchVi
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        mLoadingFragment.setVisibility(View.VISIBLE);
+        mRecyclerAlbums = findViewById(R.id.recyclerAlbums);
+        mRecyclerAlbums.setVisibility(View.INVISIBLE);
+
+        mShimmerViewContainer.setVisibility(View.VISIBLE);
 
         OkHttpClient client = new OkHttpClient();
 
@@ -67,7 +70,7 @@ public class SpotifySearchActivity extends AppCompatActivity implements SearchVi
         Log.d("token sharedPreferences", "meu token: " + token);
 
         Request request = new Request.Builder()
-                .url(ENDPOINT + "q=" + query + "&type=album&limit=15")
+                .url(ENDPOINT + "q=" + query + "&type=album&limit=10")
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
 
@@ -77,16 +80,9 @@ public class SpotifySearchActivity extends AppCompatActivity implements SearchVi
                 e.printStackTrace();
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mLoadingFragment.setVisibility(View.GONE);
-                        }
-                    });
                     mountAlbumListView(response);
                 } else {
                     if (response.code() == 401 || response.code() == 400) {
@@ -147,10 +143,12 @@ public class SpotifySearchActivity extends AppCompatActivity implements SearchVi
                 public void run() {
                     RecyclerAdapter adapter = new RecyclerAdapter(getApplicationContext(), mAlbumList);
                     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                    mRecyclerAlbums = findViewById(R.id.recyclerAlbums);
                     mRecyclerAlbums.setLayoutManager(layoutManager);
                     mRecyclerAlbums.setHasFixedSize(true);
                     mRecyclerAlbums.setAdapter(adapter);
+
+                    mShimmerViewContainer.setVisibility(View.INVISIBLE);
+                    mRecyclerAlbums.setVisibility(View.VISIBLE);
 
                     mRecyclerAlbums.addOnItemTouchListener(
                             new RecyclerItemClickListener(
