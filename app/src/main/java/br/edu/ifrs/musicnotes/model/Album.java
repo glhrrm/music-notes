@@ -17,7 +17,7 @@ public class Album implements Serializable {
     private Map<String, String> images;
     private int year;
     private String review;
-    private int rating;
+    private float rating;
 
     public Album(String id, String title, List<String> artists, Map<String, String> images, int year) {
         this.id = id;
@@ -25,5 +25,10 @@ public class Album implements Serializable {
         this.artists = artists;
         this.images = images;
         this.year = year;
+    }
+
+    public Album(String review, float rating) {
+        this.review = review;
+        this.rating = rating;
     }
 }

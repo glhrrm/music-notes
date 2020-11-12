@@ -1,5 +1,6 @@
 package br.edu.ifrs.musicnotes.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,11 +9,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.SearchView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -38,6 +41,7 @@ import okhttp3.Response;
 public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private static final String ENDPOINT = "https://api.spotify.com/v1/search?";
+    private static final int ALBUM_ACTIVITY_REQUEST_CODE = 0;
     private RecyclerView mRecyclerAlbums;
     private SharedPreferences mSharedPreferences;
     private List<Album> mAlbumList;
@@ -48,7 +52,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        mShimmerViewContainer = findViewById(R.id.shimmer_view_container);
+        mShimmerViewContainer = findViewById(R.id.shimmerContainer);
         mShimmerViewContainer.setVisibility(View.INVISIBLE);
 
         SearchView searchView = findViewById(R.id.searchAlbum);
@@ -101,6 +105,16 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     @Override
     public boolean onQueryTextChange(String newText) {
         return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ALBUM_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Snackbar.make(getWindow().getDecorView().getRootView(), "Sua resenha foi atualizada", Snackbar.LENGTH_SHORT)
+                    .show();
+        }
     }
 
     public void mountAlbumListView(Response response) {
@@ -165,7 +179,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                                             Album album = mAlbumList.get(position);
                                             Intent intent = new Intent(getApplicationContext(), AlbumActivity.class);
                                             intent.putExtra("album", album);
-                                            startActivity(intent);
+                                            startActivityForResult(intent, ALBUM_ACTIVITY_REQUEST_CODE);
                                         }
 
                                         @Override

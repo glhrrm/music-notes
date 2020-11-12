@@ -1,5 +1,7 @@
 package br.edu.ifrs.musicnotes.activity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,9 +12,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.bumptech.glide.Glide;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,17 +32,19 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
 
     private DatabaseReference mFirebase = FirebaseDatabase.getInstance().getReference();
     private Album mAlbum;
-    private ShimmerFrameLayout mShimmerViewContainer;
+    private ShimmerFrameLayout mShimmerContainer;
+    private ConstraintLayout mAlbumContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
 
-        mShimmerViewContainer = findViewById(R.id.shimmer_view_container);
-        mShimmerViewContainer.setVisibility(View.VISIBLE);
+        mAlbumContainer = findViewById(R.id.albumContainer);
+        mAlbumContainer.setVisibility(View.GONE);
 
-//        TODO: ESCONDER INFORMAÇÕES DO ÁLBUM ENQUANTO O SHIMMER ESTIVER ATIVO
+        mShimmerContainer = findViewById(R.id.shimmerContainer);
+        mShimmerContainer.setVisibility(View.VISIBLE);
 
         Button btnSaveAlbum = findViewById(R.id.btnSaveAlbum);
         btnSaveAlbum.setOnClickListener(this);
@@ -70,14 +76,15 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     mAlbum = snapshot.getValue(Album.class);
-                    albumRating.setRating(mAlbum.getRating() / 2);
+                    albumRating.setRating(mAlbum.getRating());
                     albumReview.setText(mAlbum.getReview());
                 }
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mShimmerViewContainer.setVisibility(View.GONE);
+                        mShimmerContainer.setVisibility(View.GONE);
+                        mAlbumContainer.setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -92,7 +99,7 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         RatingBar ratingBar = findViewById(R.id.albumRating);
-        int albumRating = (int) (ratingBar.getRating() * 2);
+        float albumRating = ratingBar.getRating();
 
         EditText editTextAlbumReview = findViewById(R.id.albumReview);
         String albumReview = editTextAlbumReview.getText().toString();
@@ -100,9 +107,18 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
         mAlbum.setRating(albumRating);
         mAlbum.setReview(albumReview);
 
-        DatabaseReference albums = mFirebase.child("albums");
-        albums.child(mAlbum.getId()).setValue(mAlbum);
+//        mFirebase.child("albums").child(mAlbum.getId()).setValue(mAlbum)
 
-        finish();
+        Album album = new Album(mAlbum.getReview(), mAlbum.getRating());
+        DatabaseReference albumReference = mFirebase.child("albums").child(mAlbum.getId());
+        albumReference.setValue(album)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Intent resultIntent = new Intent();
+                        setResult(Activity.RESULT_OK, resultIntent);
+                        finish();
+                    }
+                });
     }
 }
