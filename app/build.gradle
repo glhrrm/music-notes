@@ -4,7 +4,7 @@ apply plugin: 'com.google.gms.google-services'
 def getProp(prop) {
     Properties properties = new Properties()
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
-    return properties.getProperty(prop);
+    return properties.getProperty(prop)
 }
 
 android {
@@ -17,8 +17,14 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     buildTypes {
@@ -37,6 +43,7 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.google.android.material:material:1.2.1'
     compileOnly 'org.projectlombok:lombok:1.18.16'

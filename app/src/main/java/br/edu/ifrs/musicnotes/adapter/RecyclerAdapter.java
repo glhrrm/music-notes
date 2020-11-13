@@ -43,14 +43,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
         holder.albumName.setText(album.getTitle());
 
-        for (Iterator<String> i = album.getArtists().iterator(); i.hasNext(); ) {
-            holder.artistName.append(i.next());
-            if (i.hasNext()) holder.artistName.append(", ");
+        for (Iterator<String> artist = album.getArtists().iterator(); artist.hasNext(); ) {
+            holder.artistName.append(artist.next());
+            if (artist.hasNext()) holder.artistName.append(", ");
         }
 
         holder.albumYear.setText(String.valueOf(album.getYear()));
 
-        Glide.with(mContext).load(album.getImages().get("small")).into(holder.albumCover);
+        Glide.with(mContext).load(album.getImages().get("medium")).into(holder.albumCover);
     }
 
     @Override

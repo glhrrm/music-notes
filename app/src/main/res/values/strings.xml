@@ -1,27 +1,10 @@
 <resources>
     <string name="app_name">Music Notes</string>
-    <string name="meu_nome">Guilherme Parzianello</string>
-    <string name="nome_disciplina">Programação para Web 3</string>
-    <string name="logo_descricao">Logo IFRS POA</string>
     <string name="album_name">Álbum</string>
     <string name="artist_name">Artista</string>
-    <string name="album_genre">Gênero</string>
     <string name="album_cover">Capa</string>
-    <string name="create_album_button">Criar álbum</string>
     <string name="save_album_button">Salvar</string>
     <string name="album_review">O que você achou desse álbum?</string>
     <string name="circle_separator">•</string>
-    <string-array name="main_menu">
-        <item>Novo álbum</item>
-        <item>Chamar IFRS POA</item>
-        <item>Sobre</item>
-        <item>Spotify</item>
-    </string-array>
-    <string-array name="album_genre">
-        <item>Pop</item>
-        <item>Rock</item>
-        <item>MPB</item>
-        <item>Jazz</item>
-        <item>Eletrônico</item>
-    </string-array>
+    <string name="updated_at_label">Última avaliação:</string>
 </resources>

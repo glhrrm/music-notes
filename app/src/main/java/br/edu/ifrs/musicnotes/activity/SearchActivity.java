@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import br.edu.ifrs.musicnotes.R;
 import br.edu.ifrs.musicnotes.adapter.RecyclerAdapter;
@@ -111,8 +112,12 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        System.out.println("resultado:" + requestCode + ALBUM_ACTIVITY_REQUEST_CODE + resultCode + Activity.RESULT_OK);
+
         if (requestCode == ALBUM_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Snackbar.make(getWindow().getDecorView().getRootView(), "Sua resenha foi atualizada", Snackbar.LENGTH_SHORT)
+            Snackbar.make(getWindow().getDecorView().getRootView(),
+                    "Sua resenha foi atualizada",
+                    Snackbar.LENGTH_SHORT)
                     .show();
         }
     }
@@ -123,7 +128,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         int albumYear;
 
         try {
-            JSONObject res = new JSONObject(response.body().string());
+            JSONObject res = new JSONObject(Objects.requireNonNull(response.body()).string());
             JSONObject albums = new JSONObject(res.getString("albums"));
             JSONArray items = new JSONArray(albums.getString("items"));
 
@@ -152,44 +157,41 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                 mAlbumList.add(new Album(albumId, albumName, artistList, albumCover, albumYear));
             }
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    RecyclerAdapter adapter = new RecyclerAdapter(getApplicationContext(), mAlbumList);
-                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                    mRecyclerAlbums.setLayoutManager(layoutManager);
-                    mRecyclerAlbums.setHasFixedSize(true);
-                    mRecyclerAlbums.setAdapter(adapter);
+            runOnUiThread(() -> {
+                RecyclerAdapter adapter = new RecyclerAdapter(getApplicationContext(), mAlbumList);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                mRecyclerAlbums.setLayoutManager(layoutManager);
+                mRecyclerAlbums.setHasFixedSize(true);
+                mRecyclerAlbums.setAdapter(adapter);
 
-                    mShimmerViewContainer.setVisibility(View.INVISIBLE);
-                    mRecyclerAlbums.setVisibility(View.VISIBLE);
+                mShimmerViewContainer.setVisibility(View.INVISIBLE);
+                mRecyclerAlbums.setVisibility(View.VISIBLE);
 
-                    mRecyclerAlbums.addOnItemTouchListener(
-                            new RecyclerItemClickListener(
-                                    getApplicationContext(),
-                                    mRecyclerAlbums,
-                                    new RecyclerItemClickListener.OnItemClickListener() {
-                                        @Override
-                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                mRecyclerAlbums.addOnItemTouchListener(
+                        new RecyclerItemClickListener(
+                                getApplicationContext(),
+                                mRecyclerAlbums,
+                                new RecyclerItemClickListener.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                                        }
-
-                                        @Override
-                                        public void onItemClick(View view, int position) {
-                                            Album album = mAlbumList.get(position);
-                                            Intent intent = new Intent(getApplicationContext(), AlbumActivity.class);
-                                            intent.putExtra("album", album);
-                                            startActivityForResult(intent, ALBUM_ACTIVITY_REQUEST_CODE);
-                                        }
-
-                                        @Override
-                                        public void onLongItemClick(View view, int position) {
-
-                                        }
                                     }
-                            )
-                    );
-                }
+
+                                    @Override
+                                    public void onItemClick(View view, int position) {
+                                        Album album = mAlbumList.get(position);
+                                        Intent intent = new Intent(getApplicationContext(), AlbumActivity.class);
+                                        intent.putExtra("album", album);
+                                        startActivityForResult(intent, ALBUM_ACTIVITY_REQUEST_CODE);
+                                    }
+
+                                    @Override
+                                    public void onLongItemClick(View view, int position) {
+
+                                    }
+                                }
+                        )
+                );
             });
 
         } catch (JSONException | IOException e) {

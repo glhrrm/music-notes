@@ -22,11 +22,9 @@ public class SplashActivity extends AppCompatActivity {
         Glide.with(this).load(R.drawable.app_logo).into(appLogo);
 
         Handler handle = new Handler();
-        handle.postDelayed(new Runnable() {
-            @Override public void run() {
-                startActivity(new Intent(getApplicationContext(), SearchActivity.class));
-                finish();
-            }
-        }, 3000);
+        handle.postDelayed(() -> {
+            startActivity(new Intent(getApplicationContext(), SearchActivity.class));
+            finish();
+        }, 2000);
     }
 }
