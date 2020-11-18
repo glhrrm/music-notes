@@ -15,10 +15,11 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
+        android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="vertical">
 
@@ -33,7 +34,7 @@
 
         <LinearLayout
             android:id="@+id/albumExtraInfoLayout"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
@@ -63,6 +64,16 @@
                 android:textSize="14sp" />
 
         </LinearLayout>
-
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/isRatedFlag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:contentDescription="@string/is_rated_flag"
+        android:src="@drawable/ic_baseline_star_36"
+        android:visibility="invisible" />
+
 </LinearLayout>

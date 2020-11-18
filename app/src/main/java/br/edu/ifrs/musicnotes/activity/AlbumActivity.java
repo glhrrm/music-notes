@@ -30,20 +30,21 @@ import java.util.Calendar;
 import java.util.Iterator;
 
 import br.edu.ifrs.musicnotes.R;
+import br.edu.ifrs.musicnotes.helper.Helper;
 import br.edu.ifrs.musicnotes.model.Album;
 
-public class AlbumActivity extends AppCompatActivity implements View.OnClickListener {
+public class AlbumActivity extends AppCompatActivity implements View.OnClickListener, Helper {
 
     private DatabaseReference mFirebase = FirebaseDatabase.getInstance().getReference();
     private ConstraintLayout mAlbumContainer;
     private ShimmerFrameLayout mShimmerContainer;
     private Album mAlbum;
-    private TextView albumName, artistName, albumYear;
-    private ImageView albumCover;
-    private RatingBar ratingBar;
-    private float albumRating;
-    private EditText editTextAlbumReview;
-    private String albumReview;
+    private TextView mAlbumName, mArtistName, mAlbumYear;
+    private ImageView mAlbumCover;
+    private RatingBar mRatingBar;
+    private float mAlbumRating;
+    private EditText mEditTextAlbumReview;
+    private String mAlbumReview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +59,12 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
         FloatingActionButton fabSaveAlbum = findViewById(R.id.fabSaveAlbum);
         fabSaveAlbum.setOnClickListener(this);
 
-        albumName = findViewById(R.id.albumName);
-        artistName = findViewById(R.id.artistName);
-        albumYear = findViewById(R.id.albumYear);
-        albumCover = findViewById(R.id.albumCover);
-        ratingBar = findViewById(R.id.albumRating);
-        editTextAlbumReview = findViewById(R.id.albumReview);
+        mAlbumName = findViewById(R.id.albumName);
+        mArtistName = findViewById(R.id.artistName);
+        mAlbumYear = findViewById(R.id.albumYear);
+        mAlbumCover = findViewById(R.id.albumCover);
+        mRatingBar = findViewById(R.id.albumRating);
+        mEditTextAlbumReview = findViewById(R.id.albumReview);
         TextView updatedAtLabel = findViewById(R.id.updatedAtLabel);
         TextView updatedAt = findViewById(R.id.updatedAt);
 
@@ -78,9 +79,8 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
                 if (snapshot.exists()) {
                     mAlbum = snapshot.getValue(Album.class);
 
-                    assert mAlbum != null;
-                    ratingBar.setRating(mAlbum.getRating());
-                    editTextAlbumReview.setText(mAlbum.getReview());
+                    mRatingBar.setRating(mAlbum.getRating());
+                    mEditTextAlbumReview.setText(mAlbum.getReview());
                     updatedAtLabel.setText(R.string.updated_at_label);
 
                     Calendar calendar = Calendar.getInstance();
@@ -102,12 +102,12 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        albumRating = ratingBar.getRating();
-        albumReview = editTextAlbumReview.getText().toString();
+        mAlbumRating = mRatingBar.getRating();
+        mAlbumReview = mEditTextAlbumReview.getText().toString();
 
         if (hasDataChanged()) {
-            mAlbum.setRating(albumRating);
-            mAlbum.setReview(albumReview);
+            mAlbum.setRating(mAlbumRating);
+            mAlbum.setReview(mAlbumReview);
             mAlbum.setUpdatedAt(System.currentTimeMillis());
 
             mFirebase.child("albums").child(mAlbum.getId()).setValue(mAlbum)
@@ -123,8 +123,8 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onBackPressed() {
-        albumRating = ratingBar.getRating();
-        albumReview = editTextAlbumReview.getText().toString();
+        mAlbumRating = mRatingBar.getRating();
+        mAlbumReview = mEditTextAlbumReview.getText().toString();
 
         if (hasDataChanged()) {
             new AlertDialog.Builder(this)
@@ -138,7 +138,25 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    protected void displayShimmer(boolean display) {
+    protected void setDataFromApi() {
+        mAlbumName.setText(mAlbum.getTitle());
+
+        for (Iterator<String> artist = mAlbum.getArtists().iterator(); artist.hasNext(); ) {
+            mArtistName.append(artist.next());
+            if (artist.hasNext()) mArtistName.append(", ");
+        }
+
+        mAlbumYear.setText(String.valueOf(mAlbum.getYear()));
+
+        Glide.with(this).load(mAlbum.getImages().get("medium")).into(mAlbumCover);
+    }
+
+    protected boolean hasDataChanged() {
+        return mAlbumRating != mAlbum.getRating() || !mAlbumReview.equals(mAlbum.getReview());
+    }
+
+    @Override
+    public void displayShimmer(boolean display) {
         if (display) {
             mAlbumContainer.setVisibility(View.GONE);
             mShimmerContainer.setVisibility(View.VISIBLE);
@@ -146,22 +164,5 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
             mShimmerContainer.setVisibility(View.GONE);
             mAlbumContainer.setVisibility(View.VISIBLE);
         }
-    }
-
-    protected void setDataFromApi() {
-        albumName.setText(mAlbum.getTitle());
-
-        for (Iterator<String> artist = mAlbum.getArtists().iterator(); artist.hasNext(); ) {
-            artistName.append(artist.next());
-            if (artist.hasNext()) artistName.append(", ");
-        }
-
-        albumYear.setText(String.valueOf(mAlbum.getYear()));
-
-        Glide.with(this).load(mAlbum.getImages().get("medium")).into(albumCover);
-    }
-
-    protected boolean hasDataChanged() {
-        return albumRating != mAlbum.getRating() || !albumReview.equals(mAlbum.getReview());
     }
 }

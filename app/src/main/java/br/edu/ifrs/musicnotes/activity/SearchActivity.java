@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.SearchView;
@@ -31,6 +30,7 @@ import java.util.Objects;
 
 import br.edu.ifrs.musicnotes.R;
 import br.edu.ifrs.musicnotes.adapter.RecyclerAdapter;
+import br.edu.ifrs.musicnotes.helper.Helper;
 import br.edu.ifrs.musicnotes.listener.RecyclerItemClickListener;
 import br.edu.ifrs.musicnotes.model.Album;
 import okhttp3.Call;
@@ -39,66 +39,41 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, Helper {
 
     private static final String ENDPOINT = "https://api.spotify.com/v1/search?";
     private static final int ALBUM_ACTIVITY_REQUEST_CODE = 0;
+    private static final int TOKEN_ACTIVITY_REQUEST_CODE = 1;
     private RecyclerView mRecyclerAlbums;
     private SharedPreferences mSharedPreferences;
     private List<Album> mAlbumList;
-    private ShimmerFrameLayout mShimmerViewContainer;
+    private ShimmerFrameLayout mShimmerContainer;
+    private String mQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        mShimmerViewContainer = findViewById(R.id.shimmerContainer);
-        mShimmerViewContainer.setVisibility(View.INVISIBLE);
+        mShimmerContainer = findViewById(R.id.shimmerContainer);
+        mRecyclerAlbums = findViewById(R.id.recyclerAlbums);
+
+        displayShimmer(false);
 
         SearchView searchView = findViewById(R.id.searchAlbum);
         searchView.setOnQueryTextListener(this);
 
-        mSharedPreferences = getSharedPreferences("spotify", MODE_PRIVATE);
+        mSharedPreferences = getSharedPreferences("spotifyAuth", MODE_PRIVATE);
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        mRecyclerAlbums = findViewById(R.id.recyclerAlbums);
-        mRecyclerAlbums.setVisibility(View.INVISIBLE);
+        displayShimmer(true);
 
-        mShimmerViewContainer.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(this, SpotifyTokenActivity.class);
+        startActivityForResult(intent, TOKEN_ACTIVITY_REQUEST_CODE);
 
-        OkHttpClient client = new OkHttpClient();
-
-        String token = mSharedPreferences.getString("token", "");
-        Log.d("token sharedPreferences", "meu token: " + token);
-
-        Request request = new Request.Builder()
-                .url(ENDPOINT + "q=" + query + "&type=album&limit=10")
-                .addHeader("Authorization", "Bearer " + token)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    mountAlbumListView(response);
-                } else {
-                    if (response.code() == 401 || response.code() == 400) {
-                        Intent intent = new Intent(getApplicationContext(), SpotifyTokenActivity.class);
-                        startActivity(intent);
-                    }
-                    throw new IOException("Unexpected code " + response);
-                }
-
-            }
-        });
+        mQuery = query;
 
         return true;
     }
@@ -112,17 +87,49 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        System.out.println("resultado:" + requestCode + ALBUM_ACTIVITY_REQUEST_CODE + resultCode + Activity.RESULT_OK);
-
-        if (requestCode == ALBUM_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Snackbar.make(getWindow().getDecorView().getRootView(),
-                    "Sua resenha foi atualizada",
-                    Snackbar.LENGTH_SHORT)
-                    .show();
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case ALBUM_ACTIVITY_REQUEST_CODE:
+                    Snackbar.make(getWindow().getDecorView().getRootView(),
+                            "Sua resenha foi atualizada",
+                            Snackbar.LENGTH_SHORT)
+                            .show();
+                    break;
+                case TOKEN_ACTIVITY_REQUEST_CODE:
+                    getAlbums();
+                    break;
+            }
         }
     }
 
-    public void mountAlbumListView(Response response) {
+    protected void getAlbums() {
+        String token = mSharedPreferences.getString("accessToken", "");
+
+        Request request = new Request.Builder()
+                .url(ENDPOINT + "q=" + mQuery + "&type=album")
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        OkHttpClient client = new OkHttpClient();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    setAlbumListView(response);
+                } else {
+                    throw new IOException("Unexpected code " + response);
+                }
+            }
+        });
+    }
+
+    public void setAlbumListView(Response response) {
         mAlbumList = new ArrayList<>();
         String albumId, albumName;
         int albumYear;
@@ -132,40 +139,39 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             JSONObject albums = new JSONObject(res.getString("albums"));
             JSONArray items = new JSONArray(albums.getString("items"));
 
-            for (int i = 0; i < items.length(); i++) {
-                albumId = items.getJSONObject(i).get("id").toString();
-                albumName = items.getJSONObject(i).get("name").toString();
+            for (int item = 0; item < items.length(); item++) {
+                albumId = items.getJSONObject(item).get("id").toString();
+                albumName = items.getJSONObject(item).get("name").toString();
 
-                JSONArray artists = (JSONArray) items.getJSONObject(i).get("artists");
+                JSONArray artists = (JSONArray) items.getJSONObject(item).get("artists");
                 List<String> artistList = new ArrayList<>();
 
-                for (int j = 0; j < artists.length(); j++) {
-                    String artistName = artists.getJSONObject(j).get("name").toString();
+                for (int artist = 0; artist < artists.length(); artist++) {
+                    String artistName = artists.getJSONObject(artist).get("name").toString();
                     artistList.add(artistName);
                 }
 
-                JSONArray images = new JSONArray(items.getJSONObject(i).getString("images"));
-                String albumCoverSmall = images.getJSONObject(2).get("url").toString(); // imagem 64x64px
-                String albumCoverMedium = images.getJSONObject(1).get("url").toString(); // imagem 300x300px
+                JSONArray images = new JSONArray(items.getJSONObject(item).getString("images"));
+                String albumCoverSmall = images.getJSONObject(2).get("url").toString(); // 64x64px
+                String albumCoverMedium = images.getJSONObject(1).get("url").toString(); // 300x300px
                 Map<String, String> albumCover = new HashMap<>();
                 albumCover.put("small", albumCoverSmall);
                 albumCover.put("medium", albumCoverMedium);
 
-                String releaseDate = items.getJSONObject(i).get("release_date").toString();
+                String releaseDate = items.getJSONObject(item).get("release_date").toString();
                 albumYear = Integer.parseInt(releaseDate.substring(0, 4));
 
                 mAlbumList.add(new Album(albumId, albumName, artistList, albumCover, albumYear));
             }
 
             runOnUiThread(() -> {
-                RecyclerAdapter adapter = new RecyclerAdapter(getApplicationContext(), mAlbumList);
+                RecyclerAdapter albumAdapter = new RecyclerAdapter(getApplicationContext(), mAlbumList);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
                 mRecyclerAlbums.setLayoutManager(layoutManager);
                 mRecyclerAlbums.setHasFixedSize(true);
-                mRecyclerAlbums.setAdapter(adapter);
+                mRecyclerAlbums.setAdapter(albumAdapter);
 
-                mShimmerViewContainer.setVisibility(View.INVISIBLE);
-                mRecyclerAlbums.setVisibility(View.VISIBLE);
+                displayShimmer(false);
 
                 mRecyclerAlbums.addOnItemTouchListener(
                         new RecyclerItemClickListener(
@@ -196,6 +202,17 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
         } catch (JSONException | IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void displayShimmer(boolean display) {
+        if (display) {
+            mRecyclerAlbums.setVisibility(View.GONE);
+            mShimmerContainer.setVisibility(View.VISIBLE);
+        } else {
+            mShimmerContainer.setVisibility(View.GONE);
+            mRecyclerAlbums.setVisibility(View.VISIBLE);
         }
     }
 }

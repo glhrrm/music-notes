@@ -1,6 +1,7 @@
 package br.edu.ifrs.musicnotes.adapter;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,9 +9,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +42,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         return new MyViewHolder(item);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.setIsRecyclable(false);
@@ -51,6 +59,22 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         holder.albumYear.setText(String.valueOf(album.getYear()));
 
         Glide.with(mContext).load(album.getImages().get("medium")).into(holder.albumCover);
+
+        DatabaseReference mFirebase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference albumId = mFirebase.child("albums").child(album.getId());
+        albumId.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    holder.isRatedFlag.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override
@@ -60,16 +84,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView albumName, artistName, albumYear;
-        ImageView albumCover;
+        TextView albumName, artistName, albumYear, albumInfoSeparator;
+        ImageView albumCover, isRatedFlag;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             albumName = itemView.findViewById(R.id.albumName);
             artistName = itemView.findViewById(R.id.artistName);
+            albumInfoSeparator = itemView.findViewById(R.id.albumInfoSeparator);
             albumYear = itemView.findViewById(R.id.albumYear);
             albumCover = itemView.findViewById(R.id.albumCover);
+            isRatedFlag = itemView.findViewById(R.id.isRatedFlag);
         }
     }
 }

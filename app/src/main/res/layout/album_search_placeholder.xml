@@ -17,6 +17,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:gravity="center_vertical"
+        android:layout_weight="1"
         android:orientation="vertical">
 
         <View
@@ -30,4 +31,9 @@
             android:layout_marginTop="4dp"
             android:background="@color/placeholder" />
     </LinearLayout>
+
+    <View
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@color/placeholder" />
 </LinearLayout>
