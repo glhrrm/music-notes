@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -49,6 +51,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private List<Album> mAlbumList;
     private ShimmerFrameLayout mShimmerContainer;
     private String mQuery;
+    private RecyclerAdapter mAlbumAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,17 +66,23 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         SearchView searchView = findViewById(R.id.searchAlbum);
         searchView.setOnQueryTextListener(this);
 
+        FloatingActionButton fabLogout = findViewById(R.id.fabLogout);
+        fabLogout.setOnClickListener(view -> {
+            FirebaseAuth.getInstance().signOut();
+            finish();
+        });
+
         mSharedPreferences = getSharedPreferences("spotifyAuth", MODE_PRIVATE);
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        mQuery = query;
+
         displayShimmer(true);
 
         Intent intent = new Intent(this, SpotifyTokenActivity.class);
         startActivityForResult(intent, TOKEN_ACTIVITY_REQUEST_CODE);
-
-        mQuery = query;
 
         return true;
     }
@@ -165,11 +174,11 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             }
 
             runOnUiThread(() -> {
-                RecyclerAdapter albumAdapter = new RecyclerAdapter(getApplicationContext(), mAlbumList);
+                mAlbumAdapter = new RecyclerAdapter(getApplicationContext(), mAlbumList);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
                 mRecyclerAlbums.setLayoutManager(layoutManager);
                 mRecyclerAlbums.setHasFixedSize(true);
-                mRecyclerAlbums.setAdapter(albumAdapter);
+                mRecyclerAlbums.setAdapter(mAlbumAdapter);
 
                 displayShimmer(false);
 
@@ -213,6 +222,14 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         } else {
             mShimmerContainer.setVisibility(View.GONE);
             mRecyclerAlbums.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (mAlbumAdapter != null) {
+            mAlbumAdapter.notifyDataSetChanged();
         }
     }
 }

@@ -8,4 +8,8 @@
     <string name="circle_separator">•</string>
     <string name="updated_at_label">Última avaliação:</string>
     <string name="is_rated_flag">Avaliado</string>
+    <string name="user_email">E-mail</string>
+    <string name="user_password">Senha</string>
+    <string name="login">Entrar</string>
+    <string name="register">Criar conta</string>
 </resources>

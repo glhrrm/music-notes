@@ -20,8 +20,6 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
@@ -30,12 +28,12 @@ import java.util.Calendar;
 import java.util.Iterator;
 
 import br.edu.ifrs.musicnotes.R;
+import br.edu.ifrs.musicnotes.helper.Firebase;
 import br.edu.ifrs.musicnotes.helper.Helper;
 import br.edu.ifrs.musicnotes.model.Album;
 
 public class AlbumActivity extends AppCompatActivity implements View.OnClickListener, Helper {
 
-    private DatabaseReference mFirebase = FirebaseDatabase.getInstance().getReference();
     private ConstraintLayout mAlbumContainer;
     private ShimmerFrameLayout mShimmerContainer;
     private Album mAlbum;
@@ -72,32 +70,32 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
 
         setDataFromApi();
 
-        DatabaseReference albumId = mFirebase.child("albums").child(mAlbum.getId());
-        albumId.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    mAlbum = snapshot.getValue(Album.class);
+        Firebase.getAlbumsNode().child(mAlbum.getId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            mAlbum = snapshot.getValue(Album.class);
 
-                    mRatingBar.setRating(mAlbum.getRating());
-                    mEditTextAlbumReview.setText(mAlbum.getReview());
-                    updatedAtLabel.setText(R.string.updated_at_label);
+                            mRatingBar.setRating(mAlbum.getRating());
+                            mEditTextAlbumReview.setText(mAlbum.getReview());
+                            updatedAtLabel.setText(R.string.updated_at_label);
 
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTimeInMillis(mAlbum.getUpdatedAt());
-                    @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                    String updatedAtString = dateFormat.format(calendar.getTime());
-                    updatedAt.setText(updatedAtString);
-                }
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTimeInMillis(mAlbum.getUpdatedAt());
+                            @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                            String updatedAtString = dateFormat.format(calendar.getTime());
+                            updatedAt.setText(updatedAtString);
+                        }
 
-                runOnUiThread(() -> displayShimmer(false));
-            }
+                        runOnUiThread(() -> displayShimmer(false));
+                    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                    }
+                });
     }
 
     @Override
@@ -110,7 +108,7 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
             mAlbum.setReview(mAlbumReview);
             mAlbum.setUpdatedAt(System.currentTimeMillis());
 
-            mFirebase.child("albums").child(mAlbum.getId()).setValue(mAlbum)
+            Firebase.getAlbumsNode().child(mAlbum.getId()).setValue(mAlbum)
                     .addOnSuccessListener(aVoid -> {
                         Intent resultIntent = new Intent();
                         setResult(Activity.RESULT_OK, resultIntent);
@@ -152,6 +150,9 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
     }
 
     protected boolean hasDataChanged() {
+        if (mAlbum.getReview() == null) {
+            mAlbum.setReview("");
+        }
         return mAlbumRating != mAlbum.getRating() || !mAlbumReview.equals(mAlbum.getReview());
     }
 
