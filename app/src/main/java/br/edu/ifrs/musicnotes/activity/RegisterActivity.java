@@ -34,18 +34,22 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         String userEmail = Objects.requireNonNull(userEmailEditText.getText()).toString();
         String userPassword = Objects.requireNonNull(userPasswordEditText.getText()).toString();
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.createUserWithEmailAndPassword(userEmail, userPassword)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        startActivity(new Intent(getApplicationContext(), SearchActivity.class));
-                    } else {
-                        Snackbar.make(getWindow().getDecorView().getRootView(),
-                                "Erro ao criar usuário",
-                                Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                });
+        if (!userEmail.isEmpty() && !userPassword.isEmpty()) {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            auth.createUserWithEmailAndPassword(userEmail, userPassword)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            startActivity(new Intent(getApplicationContext(), SearchActivity.class));
+                        } else {
+                            Snackbar.make(view,
+                                    "Erro ao criar usuário",
+                                    Snackbar.LENGTH_SHORT)
+                                    .show();
+                        }
+                    });
+        } else {
+            Snackbar.make(view, "Preencha todos os campos", Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override

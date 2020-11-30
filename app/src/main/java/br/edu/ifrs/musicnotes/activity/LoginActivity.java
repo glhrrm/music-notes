@@ -34,18 +34,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String userEmail = Objects.requireNonNull(userEmailEditText.getText()).toString();
         String userPassword = Objects.requireNonNull(userPasswordEditText.getText()).toString();
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.signInWithEmailAndPassword(userEmail, userPassword)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        startActivity(new Intent(getApplicationContext(), SearchActivity.class));
-                        finish();
-                    } else {
-                        Snackbar.make(getWindow().getDecorView().getRootView(),
-                                "Erro ao logar usuário",
-                                Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                });
+        if (!userEmail.isEmpty() && !userPassword.isEmpty()) {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            auth.signInWithEmailAndPassword(userEmail, userPassword)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            startActivity(new Intent(getApplicationContext(), SearchActivity.class));
+                            finish();
+                        } else {
+                            Snackbar.make(view,
+                                    "Erro ao logar usuário",
+                                    Snackbar.LENGTH_SHORT)
+                                    .show();
+                        }
+                    });
+        } else {
+            Snackbar.make(view, "Preencha todos os campos", Snackbar.LENGTH_SHORT).show();
+        }
     }
 }
