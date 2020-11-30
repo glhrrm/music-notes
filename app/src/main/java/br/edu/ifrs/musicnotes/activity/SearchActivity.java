@@ -4,17 +4,21 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.SearchView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -58,6 +62,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         mShimmerContainer = findViewById(R.id.shimmerContainer);
         mRecyclerAlbums = findViewById(R.id.recyclerAlbums);
 
@@ -66,13 +73,26 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         SearchView searchView = findViewById(R.id.searchAlbum);
         searchView.setOnQueryTextListener(this);
 
-        FloatingActionButton fabLogout = findViewById(R.id.fabLogout);
-        fabLogout.setOnClickListener(view -> {
-            FirebaseAuth.getInstance().signOut();
-            finish();
-        });
-
         mSharedPreferences = getSharedPreferences("spotifyAuth", MODE_PRIVATE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_toolbar, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.signOutIcon) {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -111,7 +131,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         }
     }
 
-    protected void getAlbums() {
+    private void getAlbums() {
         String token = mSharedPreferences.getString("accessToken", "");
 
         Request request = new Request.Builder()
@@ -120,7 +140,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                 .build();
 
         OkHttpClient client = new OkHttpClient();
-
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -138,7 +157,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         });
     }
 
-    public void setAlbumListView(Response response) {
+    private void setAlbumListView(Response response) {
         mAlbumList = new ArrayList<>();
         String albumId, albumName;
         int albumYear;

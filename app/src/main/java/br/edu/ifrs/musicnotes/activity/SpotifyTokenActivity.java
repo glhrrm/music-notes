@@ -43,12 +43,16 @@ public class SpotifyTokenActivity extends AppCompatActivity {
         mSharedPreferences = getSharedPreferences("spotifyAuth", MODE_PRIVATE);
 
         boolean isUserLogged = mSharedPreferences.getBoolean("isUserLogged", false);
-        if (!isUserLogged) {
+        if (isUserLogged) {
+            resumeSearchActivity();
+        } else {
             auth();
         }
+    }
 
+    private void resumeSearchActivity() {
         long currentTimestamp = System.currentTimeMillis();
-        long tokenTimestamp = mSharedPreferences.getLong("tokenTimestamp", 0);
+        long tokenTimestamp = mSharedPreferences.getLong("tokenTimestamp", currentTimestamp);
 
         if (currentTimestamp - tokenTimestamp > TOKEN_EXPIRATION_MILLIS) {
             refreshToken();
@@ -59,7 +63,7 @@ public class SpotifyTokenActivity extends AppCompatActivity {
         finish();
     }
 
-    protected void auth() {
+    private void auth() {
         AuthenticationRequest.Builder builder =
                 new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.CODE, REDIRECT_URI);
         AuthenticationRequest request = builder.build();
@@ -82,43 +86,7 @@ public class SpotifyTokenActivity extends AppCompatActivity {
         }
     }
 
-    protected void refreshToken() {
-        String refreshToken = mSharedPreferences.getString("refreshToken", "");
-
-        FormBody.Builder body = new FormBody.Builder();
-        body.add("grant_type", "refresh_token")
-                .add("refresh_token", refreshToken)
-                .add("client_id", CLIENT_ID)
-                .add("client_secret", CLIENT_SECRET);
-
-        Request request = new Request.Builder()
-                .url("https://accounts.spotify.com/api/token")
-                .post(body.build())
-                .build();
-
-        OkHttpClient client = new OkHttpClient();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                e.printStackTrace();
-            }
-
-            @SneakyThrows
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) {
-                JSONObject res = new JSONObject(Objects.requireNonNull(response.body()).string());
-                String accessToken = res.getString("access_token");
-                long tokenTimestamp = System.currentTimeMillis();
-
-                SharedPreferences.Editor editor = getSharedPreferences("spotifyAuth", MODE_PRIVATE).edit();
-                editor.putString("accessToken", accessToken);
-                editor.putLong("tokenTimestamp", tokenTimestamp);
-                editor.apply();
-            }
-        });
-    }
-
-    protected void getTokens(String code) {
+    private void getTokens(String code) {
         FormBody.Builder body = new FormBody.Builder();
         body.add("grant_type", "authorization_code")
                 .add("code", code)
@@ -151,6 +119,46 @@ public class SpotifyTokenActivity extends AppCompatActivity {
                 editor.putString("refreshToken", refreshToken);
                 editor.putLong("tokenTimestamp", tokenTimestamp);
                 editor.apply();
+
+                resumeSearchActivity();
+            }
+        });
+    }
+
+    private void refreshToken() {
+        String refreshToken = mSharedPreferences.getString("refreshToken", "");
+
+        FormBody.Builder body = new FormBody.Builder();
+        body.add("grant_type", "refresh_token")
+                .add("refresh_token", Objects.requireNonNull(refreshToken))
+                .add("client_id", CLIENT_ID)
+                .add("client_secret", CLIENT_SECRET);
+
+        Request request = new Request.Builder()
+                .url("https://accounts.spotify.com/api/token")
+                .post(body.build())
+                .build();
+
+        OkHttpClient client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @SneakyThrows
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                JSONObject res = new JSONObject(Objects.requireNonNull(response.body()).string());
+                String accessToken = res.getString("access_token");
+                long tokenTimestamp = System.currentTimeMillis();
+
+                SharedPreferences.Editor editor = getSharedPreferences("spotifyAuth", MODE_PRIVATE).edit();
+                editor.putString("accessToken", accessToken);
+                editor.putLong("tokenTimestamp", tokenTimestamp);
+                editor.apply();
+
+                resumeSearchActivity();
             }
         });
     }

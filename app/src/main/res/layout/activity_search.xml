@@ -1,84 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:shimmer="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/spotifyLayout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/main_padding"
-    android:paddingTop="@dimen/main_padding"
-    android:paddingRight="@dimen/main_padding"
-    tools:context=".activity.SearchActivity">
+    android:orientation="vertical">
 
-    <SearchView
-        android:id="@+id/searchAlbum"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerContainer"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:paddingBottom="?attr/actionBarSize"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchAlbum"
-        shimmer:duration="800">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:theme="@style/AppBarStyle" />
 
-        <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:shimmer="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/spotifyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/main_padding"
+        android:paddingTop="@dimen/main_padding"
+        android:paddingRight="@dimen/main_padding"
+        tools:context=".activity.SearchActivity">
+
+        <SearchView
+            android:id="@+id/searchAlbum"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="16dp"
+            android:paddingBottom="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchAlbum"
+            shimmer:duration="800">
 
-            <include layout="@layout/album_search_placeholder" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-            <include layout="@layout/album_search_placeholder" />
+                <include layout="@layout/album_search_placeholder" />
 
-            <include layout="@layout/album_search_placeholder" />
+                <include layout="@layout/album_search_placeholder" />
 
-            <include layout="@layout/album_search_placeholder" />
+                <include layout="@layout/album_search_placeholder" />
 
-            <include layout="@layout/album_search_placeholder" />
+                <include layout="@layout/album_search_placeholder" />
 
-            <include layout="@layout/album_search_placeholder" />
+                <include layout="@layout/album_search_placeholder" />
 
-            <include layout="@layout/album_search_placeholder" />
+                <include layout="@layout/album_search_placeholder" />
 
-            <include layout="@layout/album_search_placeholder" />
+                <include layout="@layout/album_search_placeholder" />
 
-            <include layout="@layout/album_search_placeholder" />
+                <include layout="@layout/album_search_placeholder" />
 
-            <include layout="@layout/album_search_placeholder" />
+                <include layout="@layout/album_search_placeholder" />
 
-            <include layout="@layout/album_search_placeholder" />
-        </LinearLayout>
+                <include layout="@layout/album_search_placeholder" />
 
-    </com.facebook.shimmer.ShimmerFrameLayout>
+                <include layout="@layout/album_search_placeholder" />
+            </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerAlbums"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:paddingBottom="?attr/actionBarSize"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchAlbum" />
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/main_padding"
-        android:src="@drawable/ic_baseline_exit_to_app_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerAlbums"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingBottom="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchAlbum" />
 
-    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
