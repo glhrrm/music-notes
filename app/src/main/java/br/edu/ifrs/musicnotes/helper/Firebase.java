@@ -1,6 +1,7 @@
 package br.edu.ifrs.musicnotes.helper;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -15,11 +16,19 @@ public class Firebase {
         return authInstance;
     }
 
+    public static boolean isUserLogged() {
+        if (authInstance == null) {
+            getAuthInstance();
+        }
+        FirebaseUser currentUser = getAuthInstance().getCurrentUser();
+        return currentUser != null;
+    }
+
     public static String getUserId() {
         if (authInstance == null) {
             getAuthInstance();
         }
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        userId = getAuthInstance().getCurrentUser().getUid();
         return userId;
     }
 

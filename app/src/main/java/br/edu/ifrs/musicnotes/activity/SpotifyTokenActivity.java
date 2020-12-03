@@ -44,20 +44,24 @@ public class SpotifyTokenActivity extends AppCompatActivity {
 
         boolean isUserLogged = mSharedPreferences.getBoolean("isUserLogged", false);
         if (isUserLogged) {
-            resumeSearchActivity();
+            checkTokenExpiration();
         } else {
             auth();
         }
     }
 
-    private void resumeSearchActivity() {
+    private void checkTokenExpiration() {
         long currentTimestamp = System.currentTimeMillis();
         long tokenTimestamp = mSharedPreferences.getLong("tokenTimestamp", currentTimestamp);
 
         if (currentTimestamp - tokenTimestamp > TOKEN_EXPIRATION_MILLIS) {
             refreshToken();
+        } else {
+            resumeSearchActivity();
         }
+    }
 
+    private void resumeSearchActivity() {
         Intent resultIntent = new Intent();
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
@@ -120,7 +124,7 @@ public class SpotifyTokenActivity extends AppCompatActivity {
                 editor.putLong("tokenTimestamp", tokenTimestamp);
                 editor.apply();
 
-                resumeSearchActivity();
+                checkTokenExpiration();
             }
         });
     }

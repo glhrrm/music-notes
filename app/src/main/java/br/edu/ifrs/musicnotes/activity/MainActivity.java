@@ -1,13 +1,13 @@
 package br.edu.ifrs.musicnotes.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import br.edu.ifrs.musicnotes.R;
+import br.edu.ifrs.musicnotes.helper.Firebase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,8 +16,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("spotifyAuth", MODE_PRIVATE);
-        sharedPreferences.edit().clear().apply();
+        if (Firebase.isUserLogged()) {
+            startActivity(new Intent(this, SearchActivity.class));
+        }
 
         Button buttonLogin = findViewById(R.id.buttonLogin);
         Button buttonRegister = findViewById(R.id.buttonRegister);

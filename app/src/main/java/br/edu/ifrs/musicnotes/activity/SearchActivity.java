@@ -88,6 +88,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.signOutIcon) {
             FirebaseAuth.getInstance().signOut();
+            mSharedPreferences.edit().clear().apply();
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }
@@ -227,7 +228,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                         )
                 );
             });
-
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }

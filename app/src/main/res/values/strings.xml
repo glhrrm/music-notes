@@ -13,4 +13,5 @@
     <string name="login">Entrar</string>
     <string name="register">Criar conta</string>
     <string name="sign_out">Sair</string>
+    <string name="search_hint">Artista ou álbum</string>
 </resources>
