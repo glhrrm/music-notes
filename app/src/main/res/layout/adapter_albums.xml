@@ -68,14 +68,18 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/isRatedFlag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <TextView
+        android:id="@+id/albumRatingNumeric"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:contentDescription="@string/is_rated_flag"
-        android:src="@drawable/ic_baseline_star_36"
-        android:visibility="invisible" />
+        android:background="@drawable/rounded_corner"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:visibility="invisible">
+
+    </TextView>
 
 </LinearLayout>

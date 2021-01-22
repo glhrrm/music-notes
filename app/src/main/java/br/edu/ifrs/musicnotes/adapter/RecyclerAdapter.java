@@ -1,6 +1,7 @@
 package br.edu.ifrs.musicnotes.adapter;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -48,10 +50,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
         Firebase.getAlbumsNode().child(album.getId())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
-                            holder.isRatedFlag.setVisibility(View.VISIBLE);
+                            Album album = snapshot.getValue(Album.class);
+                            String albumIntegerRating = String.valueOf((int) (album.getRating() * 2));
+                            holder.albumRating.setText(albumIntegerRating);
+                            holder.albumRating.setVisibility(View.VISIBLE);
                         }
                     }
 
@@ -69,8 +75,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView albumName, artistName, albumYear, albumInfoSeparator;
-        ImageView albumCover, isRatedFlag;
+        TextView albumName, artistName, albumYear, albumInfoSeparator, albumRating;
+        ImageView albumCover;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -80,7 +86,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             albumInfoSeparator = itemView.findViewById(R.id.albumInfoSeparator);
             albumYear = itemView.findViewById(R.id.albumYear);
             albumCover = itemView.findViewById(R.id.albumCover);
-            isRatedFlag = itemView.findViewById(R.id.isRatedFlag);
+            albumRating = itemView.findViewById(R.id.albumRatingNumeric);
         }
     }
 
