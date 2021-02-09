@@ -24,12 +24,12 @@ import br.edu.ifrs.musicnotes.R;
 import br.edu.ifrs.musicnotes.helper.Firebase;
 import br.edu.ifrs.musicnotes.model.Album;
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
+public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder> {
 
     private Context mContext;
     private List<Album> mAlbumList;
 
-    public RecyclerAdapter(Context mContext, List<Album> mAlbumList) {
+    public AlbumAdapter(Context mContext, List<Album> mAlbumList) {
         this.mContext = mContext;
         this.mAlbumList = mAlbumList;
     }
@@ -90,7 +90,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         }
     }
 
-    protected void setDataFromApi(MyViewHolder holder, Album album) {
+    private void setDataFromApi(MyViewHolder holder, Album album) {
         holder.albumName.setText(album.getTitle());
 
         for (Iterator<String> artist = album.getArtists().iterator(); artist.hasNext(); ) {

@@ -15,22 +15,6 @@
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="16dp">
 
-        <EditText
-            android:id="@+id/albumReview"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:autofillHints="@string/album_review"
-            android:ems="10"
-            android:gravity="start|top"
-            android:hint="@string/album_review"
-            android:inputType="textMultiLine"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/updatedAtLayout"
-            app:layout_constraintTop_toBottomOf="@+id/albumRating" />
-
         <ImageView
             android:id="@+id/albumCover"
             android:layout_width="150dp"
@@ -41,8 +25,19 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
 
+        <TextView
+            android:id="@+id/albumName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/albumCover" />
+
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/albumInfoLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -82,18 +77,46 @@
             android:stepSize="0.5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/albumInfoLayout" />
 
-        <TextView
-            android:id="@+id/albumName"
+        <EditText
+            android:id="@+id/albumReview"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:textSize="24sp"
+            android:layout_marginBottom="16dp"
+            android:autofillHints="@string/album_review"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="@string/album_review"
+            android:inputType="textMultiLine"
+            app:layout_constraintBottom_toTopOf="@id/chipGroupTags"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/albumCover" />
+            app:layout_constraintTop_toBottomOf="@+id/albumRating" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupTags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/albumReview">
+
+        </com.google.android.material.chip.ChipGroup>
+
+        <ImageButton
+            android:id="@+id/buttonAddTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:background="@drawable/rounded_corner"
+            android:contentDescription="@string/add_tag_button"
+            android:padding="4dp"
+            android:src="@drawable/ic_add"
+            app:layout_constraintBottom_toBottomOf="@id/chipGroupTags"
+            app:layout_constraintStart_toEndOf="@id/chipGroupTags"
+            app:layout_constraintTop_toTopOf="@id/chipGroupTags" />
 
         <LinearLayout
             android:id="@+id/updatedAtLayout"
@@ -103,7 +126,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/albumReview">
+            app:layout_constraintTop_toBottomOf="@id/chipGroupTags">
 
             <TextView
                 android:id="@+id/updatedAtLabel"
@@ -126,6 +149,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_margin="12dp"
+            android:contentDescription="@string/save_album_button"
             android:src="@drawable/ic_baseline_check_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

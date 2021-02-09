@@ -14,4 +14,6 @@
     <string name="register">Criar conta</string>
     <string name="sign_out">Sair</string>
     <string name="search_hint">Artista ou álbum</string>
+    <string name="add_tag_button">Nova tag</string>
+    <string name="tag">Tag</string>
 </resources>

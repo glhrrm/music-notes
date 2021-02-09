@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="br.edu.ifrs.musicnotes.activity.SplashActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar.FullScreen">
+            android:theme="@style/Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -21,7 +21,7 @@
         </activity>
         <activity
             android:name="br.edu.ifrs.musicnotes.activity.MainActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar.FullScreen"></activity>
+            android:theme="@style/Fullscreen" />
         <activity
             android:name="br.edu.ifrs.musicnotes.activity.LoginActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -32,7 +32,9 @@
             android:name="br.edu.ifrs.musicnotes.activity.SearchActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="br.edu.ifrs.musicnotes.activity.AlbumActivity" />
-        <activity android:name="br.edu.ifrs.musicnotes.activity.SpotifyTokenActivity" />
+        <activity
+            android:name="br.edu.ifrs.musicnotes.activity.SpotifyTokenActivity"
+            android:theme="@style/AppTheme" />
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />

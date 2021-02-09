@@ -14,6 +14,7 @@ public class Album implements Serializable {
     private String id;
     private String title;
     private List<String> artists;
+    private List<String> tags;
     private Map<String, String> images;
     private int year;
     private String review;

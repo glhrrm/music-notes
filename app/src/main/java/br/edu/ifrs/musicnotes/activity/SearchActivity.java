@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import br.edu.ifrs.musicnotes.R;
-import br.edu.ifrs.musicnotes.adapter.RecyclerAdapter;
+import br.edu.ifrs.musicnotes.adapter.AlbumAdapter;
 import br.edu.ifrs.musicnotes.helper.Helper;
 import br.edu.ifrs.musicnotes.listener.RecyclerItemClickListener;
 import br.edu.ifrs.musicnotes.model.Album;
@@ -55,7 +55,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private List<Album> mAlbumList;
     private ShimmerFrameLayout mShimmerContainer;
     private String mQuery;
-    private RecyclerAdapter mAlbumAdapter;
+    private AlbumAdapter mAlbumAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,7 +194,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             }
 
             runOnUiThread(() -> {
-                mAlbumAdapter = new RecyclerAdapter(getApplicationContext(), mAlbumList);
+                mAlbumAdapter = new AlbumAdapter(getApplicationContext(), mAlbumList);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
                 mRecyclerAlbums.setLayoutManager(layoutManager);
                 mRecyclerAlbums.setHasFixedSize(true);
