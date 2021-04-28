@@ -135,6 +135,7 @@ public class AlbumActivity extends AppCompatActivity implements Helper {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             mAlbum = snapshot.getValue(Album.class);
+                            mAlbum.setId(snapshot.getKey());
 
                             mRatingBar.setRating(mAlbum.getRating());
 
@@ -212,12 +213,11 @@ public class AlbumActivity extends AppCompatActivity implements Helper {
         if (mAlbum.getReview() == null) {
             mAlbum.setReview("");
         }
-//        if (mNewAlbumReview == null) {
-//            mNewAlbumReview = "";
-//        }
+
         if (mAlbum.getTags() == null) {
             mAlbum.setTags(new ArrayList<>());
         }
+
         Set<String> mOldAlbumTagSet = new HashSet<>(mAlbum.getTags());
         Set<String> mNewAlbumTagSet = new HashSet<>(mNewAlbumTags);
         return mNewAlbumRating != mAlbum.getRating() || !mNewAlbumReview.equals(mAlbum.getReview()) || !mNewAlbumTagSet.equals(mOldAlbumTagSet);
