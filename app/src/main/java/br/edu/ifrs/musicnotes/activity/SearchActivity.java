@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import br.edu.ifrs.musicnotes.R;
-import br.edu.ifrs.musicnotes.adapter.RecyclerAdapter;
+import br.edu.ifrs.musicnotes.adapter.AlbumAdapter;
 import br.edu.ifrs.musicnotes.helper.Helper;
 import br.edu.ifrs.musicnotes.listener.RecyclerItemClickListener;
 import br.edu.ifrs.musicnotes.model.Album;
@@ -50,12 +50,14 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private static final String ENDPOINT = "https://api.spotify.com/v1/search?";
     private static final int ALBUM_ACTIVITY_REQUEST_CODE = 0;
     private static final int TOKEN_ACTIVITY_REQUEST_CODE = 1;
+    private static final int LIMIT = 10;
+    private static int mOffset = 0;
     private RecyclerView mRecyclerAlbums;
     private SharedPreferences mSharedPreferences;
     private List<Album> mAlbumList;
     private ShimmerFrameLayout mShimmerContainer;
     private String mQuery;
-    private RecyclerAdapter mAlbumAdapter;
+    private AlbumAdapter mAlbumAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +101,8 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     @Override
     public boolean onQueryTextSubmit(String query) {
         mQuery = query;
+        mAlbumList = new ArrayList<>();
+        mOffset = 0;
 
         displayShimmer(true);
 
@@ -136,7 +140,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         String token = mSharedPreferences.getString("accessToken", "");
 
         Request request = new Request.Builder()
-                .url(ENDPOINT + "q=" + mQuery + "&type=album")
+                .url(ENDPOINT + "q=" + mQuery + "&type=album&limit=" + LIMIT + "&offset=" + mOffset)
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
 
@@ -150,6 +154,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (response.isSuccessful()) {
+                    mOffset += LIMIT;
                     setAlbumListView(response);
                 } else {
                     throw new IOException("Unexpected code " + response);
@@ -159,7 +164,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     }
 
     private void setAlbumListView(Response response) {
-        mAlbumList = new ArrayList<>();
         String albumId, albumName;
         int albumYear;
 
@@ -194,39 +198,61 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             }
 
             runOnUiThread(() -> {
-                mAlbumAdapter = new RecyclerAdapter(getApplicationContext(), mAlbumList);
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                mRecyclerAlbums.setLayoutManager(layoutManager);
-                mRecyclerAlbums.setHasFixedSize(true);
-                mRecyclerAlbums.setAdapter(mAlbumAdapter);
+//                first search for a given query
+                if (mOffset == LIMIT) {
+                    mAlbumAdapter = new AlbumAdapter(getApplicationContext(), mAlbumList);
+                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                    mRecyclerAlbums.setLayoutManager(layoutManager);
+                    mRecyclerAlbums.setHasFixedSize(true);
+                    mRecyclerAlbums.setAdapter(mAlbumAdapter);
 
-                displayShimmer(false);
+                    displayShimmer(false);
 
-                mRecyclerAlbums.addOnItemTouchListener(
-                        new RecyclerItemClickListener(
-                                getApplicationContext(),
-                                mRecyclerAlbums,
-                                new RecyclerItemClickListener.OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    mRecyclerAlbums.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+                        }
 
+                        @Override
+                        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                            super.onScrolled(recyclerView, dx, dy);
+
+                            if (!recyclerView.canScrollVertically(1) && dy > 0) {
+                                getAlbums();
+                            }
+                        }
+                    });
+
+                    mRecyclerAlbums.addOnItemTouchListener(
+                            new RecyclerItemClickListener(
+                                    getApplicationContext(),
+                                    mRecyclerAlbums,
+                                    new RecyclerItemClickListener.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                                        }
+
+                                        @Override
+                                        public void onItemClick(View view, int position) {
+                                            Album album = mAlbumList.get(position);
+                                            Intent intent = new Intent(getApplicationContext(), AlbumActivity.class);
+                                            intent.putExtra("album", album);
+                                            startActivityForResult(intent, ALBUM_ACTIVITY_REQUEST_CODE);
+                                        }
+
+                                        @Override
+                                        public void onLongItemClick(View view, int position) {
+
+                                        }
                                     }
-
-                                    @Override
-                                    public void onItemClick(View view, int position) {
-                                        Album album = mAlbumList.get(position);
-                                        Intent intent = new Intent(getApplicationContext(), AlbumActivity.class);
-                                        intent.putExtra("album", album);
-                                        startActivityForResult(intent, ALBUM_ACTIVITY_REQUEST_CODE);
-                                    }
-
-                                    @Override
-                                    public void onLongItemClick(View view, int position) {
-
-                                    }
-                                }
-                        )
-                );
+                            )
+                    );
+//                subsequent searches
+                } else {
+                    mAlbumAdapter.notifyDataSetChanged();
+                }
             });
         } catch (JSONException | IOException e) {
             e.printStackTrace();
