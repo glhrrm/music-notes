@@ -46,26 +46,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
         holder.setIsRecyclable(false);
 
         Album album = mAlbumList.get(position);
-        setDataFromApi(holder, album);
-
-        Firebase.getAlbumsNode().child(album.getId())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.N)
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            Album album = snapshot.getValue(Album.class);
-                            String albumIntegerRating = String.valueOf((int) (album.getRating() * 2));
-                            holder.albumRating.setText(albumIntegerRating);
-                            holder.albumRating.setVisibility(View.VISIBLE);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+        setAlbumFromApi(holder, album);
+        setAlbumFromDatabase(holder, album);
     }
 
     @Override
@@ -90,7 +72,11 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
         }
     }
 
-    private void setDataFromApi(MyViewHolder holder, Album album) {
+    /*
+    Sets data from Spotify API passed through an Album bundle object to the adapter.
+    These data are not stored into the app database, i.e., album title, artists, year and images.
+     */
+    private void setAlbumFromApi(MyViewHolder holder, Album album) {
         holder.albumName.setText(album.getTitle());
 
         for (Iterator<String> artist = album.getArtists().iterator(); artist.hasNext(); ) {
@@ -101,5 +87,29 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
         holder.albumYear.setText(String.valueOf(album.getYear()));
 
         Glide.with(mContext).load(album.getImages().get("medium")).into(holder.albumCover);
+    }
+
+    /*
+    Sets album rating from database (app-exclusive data) passed through an Album object to the adapter.
+     */
+    private void setAlbumFromDatabase(MyViewHolder holder, Album album) {
+        Firebase.getAlbumsNode().child(album.getId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            Album album = snapshot.getValue(Album.class);
+                            String albumIntegerRating = String.valueOf((int) (album.getRating() * 2));
+                            holder.albumRating.setText(albumIntegerRating);
+                            holder.albumRating.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
 }
