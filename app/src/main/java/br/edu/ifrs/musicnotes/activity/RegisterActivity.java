@@ -55,7 +55,5 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        updateUI(currentUser);
     }
 }

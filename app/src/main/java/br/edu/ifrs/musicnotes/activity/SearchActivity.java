@@ -136,6 +136,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         }
     }
 
+    /*
+    Retrieves albums from Spotify API.
+     */
     private void getAlbums() {
         String token = mSharedPreferences.getString("accessToken", "");
 
@@ -163,100 +166,122 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         });
     }
 
+    /*
+    Sets album list from Spotify API response.
+     */
     private void setAlbumListView(Response response) {
-        String albumId, albumName;
-        int albumYear;
-
         try {
             JSONObject res = new JSONObject(Objects.requireNonNull(response.body()).string());
             JSONObject albums = new JSONObject(res.getString("albums"));
             JSONArray items = new JSONArray(albums.getString("items"));
 
             for (int item = 0; item < items.length(); item++) {
-                albumId = items.getJSONObject(item).get("id").toString();
-                albumName = items.getJSONObject(item).get("name").toString();
-
-                JSONArray artists = (JSONArray) items.getJSONObject(item).get("artists");
-                List<String> artistList = new ArrayList<>();
-
-                for (int artist = 0; artist < artists.length(); artist++) {
-                    String artistName = artists.getJSONObject(artist).get("name").toString();
-                    artistList.add(artistName);
-                }
-
-                JSONArray images = new JSONArray(items.getJSONObject(item).getString("images"));
-                String albumCoverSmall = images.getJSONObject(2).get("url").toString(); // 64x64px
-                String albumCoverMedium = images.getJSONObject(1).get("url").toString(); // 300x300px
-                Map<String, String> albumCover = new HashMap<>();
-                albumCover.put("small", albumCoverSmall);
-                albumCover.put("medium", albumCoverMedium);
-
-                String releaseDate = items.getJSONObject(item).get("release_date").toString();
-                albumYear = Integer.parseInt(releaseDate.substring(0, 4));
-
-                mAlbumList.add(new Album(albumId, albumName, artistList, albumCover, albumYear));
+                JSONObject jsonAlbum = items.getJSONObject(item);
+                Album album = setAlbumObject(jsonAlbum);
+                mAlbumList.add(album);
             }
 
-            runOnUiThread(() -> {
-//                first search for a given query
-                if (mOffset == LIMIT) {
-                    mAlbumAdapter = new AlbumAdapter(getApplicationContext(), mAlbumList);
-                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                    mRecyclerAlbums.setLayoutManager(layoutManager);
-                    mRecyclerAlbums.setHasFixedSize(true);
-                    mRecyclerAlbums.setAdapter(mAlbumAdapter);
-
-                    displayShimmer(false);
-
-                    mRecyclerAlbums.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                        @Override
-                        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                            super.onScrollStateChanged(recyclerView, newState);
-                        }
-
-                        @Override
-                        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                            super.onScrolled(recyclerView, dx, dy);
-
-                            if (!recyclerView.canScrollVertically(1) && dy > 0) {
-                                getAlbums();
-                            }
-                        }
-                    });
-
-                    mRecyclerAlbums.addOnItemTouchListener(
-                            new RecyclerItemClickListener(
-                                    getApplicationContext(),
-                                    mRecyclerAlbums,
-                                    new RecyclerItemClickListener.OnItemClickListener() {
-                                        @Override
-                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                                        }
-
-                                        @Override
-                                        public void onItemClick(View view, int position) {
-                                            Album album = mAlbumList.get(position);
-                                            Intent intent = new Intent(getApplicationContext(), AlbumActivity.class);
-                                            intent.putExtra("album", album);
-                                            startActivityForResult(intent, ALBUM_ACTIVITY_REQUEST_CODE);
-                                        }
-
-                                        @Override
-                                        public void onLongItemClick(View view, int position) {
-
-                                        }
-                                    }
-                            )
-                    );
-//                subsequent searches
-                } else {
-                    mAlbumAdapter.notifyDataSetChanged();
-                }
-            });
+            runOnUiThread(this::setAlbumAdapter);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /*
+    Sets adapter for recycler view, including list scroll and item click settings.
+     */
+    private void setAlbumAdapter() {
+        // first search for a given query
+        if (mOffset == LIMIT) {
+            mAlbumAdapter = new AlbumAdapter(getApplicationContext(), mAlbumList);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+            mRecyclerAlbums.setLayoutManager(layoutManager);
+            mRecyclerAlbums.setHasFixedSize(true);
+            mRecyclerAlbums.setAdapter(mAlbumAdapter);
+
+            displayShimmer(false);
+
+            mRecyclerAlbums.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                }
+
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    if (!recyclerView.canScrollVertically(1) && dy > 0) {
+                        getAlbums();
+                    }
+                }
+            });
+
+            mRecyclerAlbums.addOnItemTouchListener(
+                    new RecyclerItemClickListener(
+                            getApplicationContext(),
+                            mRecyclerAlbums,
+                            new RecyclerItemClickListener.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                                }
+
+                                @Override
+                                public void onItemClick(View view, int position) {
+                                    Album album = mAlbumList.get(position);
+                                    Intent intent = new Intent(getApplicationContext(), AlbumActivity.class);
+                                    intent.putExtra("album", album);
+                                    startActivityForResult(intent, ALBUM_ACTIVITY_REQUEST_CODE);
+                                }
+
+                                @Override
+                                public void onLongItemClick(View view, int position) {
+
+                                }
+                            }
+                    )
+            );
+            // subsequent searches
+        } else {
+            mAlbumAdapter.notifyDataSetChanged();
+        }
+    }
+
+    /*
+    Creates album object from Spotify API with id, title, artists, year and images.
+     */
+    private Album setAlbumObject(JSONObject item) {
+        Album album = new Album();
+
+        try {
+            String albumId = item.get("id").toString();
+            String albumName = item.get("name").toString();
+
+            JSONArray artists = (JSONArray) item.get("artists");
+            List<String> artistList = new ArrayList<>();
+
+            for (int artist = 0; artist < artists.length(); artist++) {
+                String artistName = artists.getJSONObject(artist).get("name").toString();
+                artistList.add(artistName);
+            }
+
+            JSONArray images = new JSONArray(item.getString("images"));
+            String albumCoverSmall = images.getJSONObject(2).get("url").toString(); // 64x64px
+            String albumCoverMedium = images.getJSONObject(1).get("url").toString(); // 300x300px
+            Map<String, String> albumCover = new HashMap<>();
+            albumCover.put("small", albumCoverSmall);
+            albumCover.put("medium", albumCoverMedium);
+
+            String releaseDate = item.get("release_date").toString();
+            int albumYear = Integer.parseInt(releaseDate.substring(0, 4));
+
+            album = new Album(albumId, albumName, artistList, albumCover, albumYear);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return album;
     }
 
     @Override
