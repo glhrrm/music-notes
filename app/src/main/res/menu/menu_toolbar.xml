@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/myLibraryIcon"
+        android:icon="@drawable/ic_baseline_library_music_24"
+        android:title="@string/my_library"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/signOutIcon"
         android:icon="@drawable/ic_baseline_exit_to_app_24"
         android:title="@string/sign_out"

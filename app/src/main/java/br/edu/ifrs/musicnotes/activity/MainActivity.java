@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (Firebase.isUserLogged()) {
+        if (Firebase.isUserAuthenticated()) {
             startActivity(new Intent(this, SearchActivity.class));
         }
 

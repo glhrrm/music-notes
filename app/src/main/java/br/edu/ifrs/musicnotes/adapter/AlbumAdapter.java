@@ -37,7 +37,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View item = LayoutInflater.from(mContext).inflate(R.layout.adapter_albums, parent, false);
+        View item = LayoutInflater.from(mContext).inflate(R.layout.adapter_album, parent, false);
         return new MyViewHolder(item);
     }
 
@@ -93,7 +93,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
     Sets album rating from database (app-exclusive data) passed through an Album object to the adapter.
      */
     private void setAlbumFromDatabase(MyViewHolder holder, Album album) {
-        Firebase.getAlbumsNode().child(album.getId())
+        Firebase.getAlbums().child(album.getId())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override

@@ -42,8 +42,8 @@ public class SpotifyTokenActivity extends AppCompatActivity {
 
         mSharedPreferences = getSharedPreferences("spotifyAuth", MODE_PRIVATE);
 
-        boolean isUserLogged = mSharedPreferences.getBoolean("isUserLogged", false);
-        if (isUserLogged) {
+        boolean isUserAuthenticated = mSharedPreferences.getBoolean("isUserAuthenticated", false);
+        if (isUserAuthenticated) {
             checkTokenExpiration();
         } else {
             auth();
@@ -80,7 +80,7 @@ public class SpotifyTokenActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_CODE) {
             SharedPreferences.Editor editor = getSharedPreferences("spotifyAuth", MODE_PRIVATE).edit();
-            editor.putBoolean("isUserLogged", true);
+            editor.putBoolean("isUserAuthenticated", true);
             editor.apply();
 
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/myLibraryNavigation"
+    app:startDestination="@id/tagSearchFragment">
+    <fragment
+        android:id="@+id/tagSearchFragment"
+        android:name="br.edu.ifrs.musicnotes.fragment.TagSearchFragment"
+        android:label="fragment_tag_search"
+        tools:layout="@layout/fragment_tag_search" />
+</navigation>

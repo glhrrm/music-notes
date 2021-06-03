@@ -93,9 +93,16 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             mSharedPreferences.edit().clear().apply();
             startActivity(new Intent(this, MainActivity.class));
             finish();
+        } else if (item.getItemId() == R.id.myLibraryIcon) {
+            startActivity(new Intent(this, MyLibraryActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
     }
 
     @Override
@@ -110,11 +117,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         startActivityForResult(intent, TOKEN_ACTIVITY_REQUEST_CODE);
 
         return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        return false;
     }
 
     @Override

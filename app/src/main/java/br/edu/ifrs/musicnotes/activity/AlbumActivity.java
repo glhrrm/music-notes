@@ -103,7 +103,7 @@ public class AlbumActivity extends AppCompatActivity implements Helper {
     These are app-exclusive data, i.e., album review, rating, tags and last update.
      */
     private void setAlbumFromDatabase() {
-        Firebase.getAlbumsNode().child(mAlbum.getId())
+        Firebase.getAlbums().child(mAlbum.getId())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
@@ -195,7 +195,7 @@ public class AlbumActivity extends AppCompatActivity implements Helper {
             mAlbum.setTags(mNewAlbumTags);
             mAlbum.setUpdatedAt(System.currentTimeMillis());
 
-            Firebase.getAlbumsNode().child(mAlbum.getId()).setValue(mAlbum)
+            Firebase.getAlbums().child(mAlbum.getId()).setValue(mAlbum)
                     .addOnSuccessListener(aVoid -> {
                         Intent resultIntent = new Intent();
                         setResult(Activity.RESULT_OK, resultIntent);
