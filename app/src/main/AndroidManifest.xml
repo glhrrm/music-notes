@@ -11,8 +11,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".activity.AuthActivity"
+            android:noHistory="true" />
+
         <activity android:name=".services.SpotifyAuthActivity" />
-        <activity android:name=".activity.MyLibraryActivity" />
+
+        <activity android:name=".activity.MainActivity" />
+
         <activity
             android:name=".activity.SplashActivity"
             android:theme="@style/Fullscreen">
@@ -22,22 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.MainActivity"
-            android:theme="@style/Fullscreen" />
-        <activity
-            android:name=".activity.LoginActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".activity.RegisterActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".activity.SearchActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".activity.AlbumActivity" />
-        <activity
-            android:name=".activity.SpotifyTokenActivity"
-            android:theme="@style/AppTheme" />
+
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />

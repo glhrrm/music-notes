@@ -2,7 +2,6 @@ package br.edu.ifrs.musicnotes.fragment;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,7 @@ import br.edu.ifrs.musicnotes.interfaces.ParameterizedCallback;
 import br.edu.ifrs.musicnotes.model.Album;
 import br.edu.ifrs.musicnotes.services.SpotifyApi;
 
-public class TagSearchFragment extends Fragment {
+public class AdvancedSearchFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,24 +38,21 @@ public class TagSearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_tag_search, container, false);
+        return inflater.inflate(R.layout.fragment_advanced_search, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        SearchView searchView = getActivity().findViewById(R.id.searchTag);
+        SearchView searchView = requireActivity().findViewById(R.id.searchTag);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public boolean onQueryTextSubmit(String query) {
                 String[] tags = query.trim().split("\\s*,\\s*");
                 getAlbumsByTags(tags, albumIds -> {
-                    SpotifyApi.authenticate((AppCompatActivity) getActivity(), () -> {
+                    SpotifyApi.authenticate((AppCompatActivity) requireActivity(), () -> {
                         List<Album> albumList = SpotifyApi.getAlbums((List<String>) albumIds);
                         showAlbums(albumList);
                     });
@@ -101,15 +97,9 @@ public class TagSearchFragment extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void showAlbums(List<Album> albumList) {
-        TextView textView = getActivity().findViewById(R.id.textview);
+        TextView textView = requireActivity().findViewById(R.id.textview);
         albumList.forEach(album -> {
             textView.append(album.getTitle() + " " + album.getArtists() + "; ");
         });
-//        AlbumCoverAdapter albumCoverAdapter = new AlbumCoverAdapter(getActivity(), albumList);
-//        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
-//        RecyclerView recyclerAlbumCovers = getActivity().findViewById(R.id.recyclerAlbumCovers);
-//        recyclerAlbumCovers.setLayoutManager(layoutManager);
-//        recyclerAlbumCovers.setHasFixedSize(true);
-//        recyclerAlbumCovers.setAdapter(albumCoverAdapter);
     }
 }

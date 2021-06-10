@@ -108,10 +108,8 @@ public class SpotifyApi {
             }
 
             JSONArray images = new JSONArray(item.getString("images"));
-            String albumCoverSmall = images.getJSONObject(2).get("url").toString(); // 64x64px
             String albumCoverMedium = images.getJSONObject(1).get("url").toString(); // 300x300px
             Map<String, String> albumCover = new HashMap<>();
-            albumCover.put("small", albumCoverSmall);
             albumCover.put("medium", albumCoverMedium);
 
             String releaseDate = item.get("release_date").toString();
@@ -125,11 +123,49 @@ public class SpotifyApi {
         return album;
     }
 
+    public static List<Album> searchAlbums(String query) {
+//      Definir programaticamente
+        int limit = 20, offset = 0;
+
+        List<Album> albumList = new ArrayList<>();
+
+        Request request = new Request.Builder()
+                .url(SEARCH_ENDPOINT + "?q=" + query + "&type=album&limit=" + limit + "&offset=" + offset)
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        OkHttpClient client = new OkHttpClient();
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                try {
+                    JSONObject res = new JSONObject(response.body().string());
+                    JSONObject albums = new JSONObject(res.getString("albums"));
+                    JSONArray items = new JSONArray(albums.getString("items"));
+
+                    for (int item = 0; item < items.length(); item++) {
+                        JSONObject jsonAlbum = items.getJSONObject(item);
+                        Album album = setAlbumObject(jsonAlbum);
+                        albumList.add(album);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                throw new IOException("Unexpected code " + response);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return albumList;
+    }
+
     public static class SpotifyAuthFragment extends Fragment {
 
         private final AppCompatActivity activity;
         private final Runnable callback;
-        private ActivityResultLauncher<Intent> someActivityResultLauncher;
+        private ActivityResultLauncher<Intent> authActivityResultLauncher;
 
         public SpotifyAuthFragment(AppCompatActivity activity, Runnable callback) {
             this.activity = activity;
@@ -140,7 +176,7 @@ public class SpotifyApi {
         public void onAttach(@NonNull Context context) {
             super.onAttach(context);
 
-            someActivityResultLauncher = registerForActivityResult(
+            authActivityResultLauncher = registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> {
                         if (result.getResultCode() == Activity.RESULT_OK) {
@@ -166,7 +202,7 @@ public class SpotifyApi {
             super.onViewCreated(view, savedInstanceState);
 
             Intent intent = new Intent(activity, SpotifyAuthActivity.class);
-            someActivityResultLauncher.launch(intent);
+            authActivityResultLauncher.launch(intent);
         }
 
         @Override

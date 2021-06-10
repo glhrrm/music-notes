@@ -8,7 +8,7 @@
     android:orientation="horizontal">
 
     <ImageView
-        android:id="@+id/albumCover"
+        android:id="@+id/adapterCover"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:contentDescription="@string/album_cover"
@@ -24,7 +24,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/albumName"
+            android:id="@+id/adapterTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -33,13 +33,12 @@
             android:textSize="16sp" />
 
         <LinearLayout
-            android:id="@+id/albumExtraInfoLayout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/artistName"
+                android:id="@+id/adapterArtists"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -49,7 +48,7 @@
                 android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/albumInfoSeparator"
+                android:id="@+id/adapterSeparator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
@@ -59,7 +58,7 @@
                 android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/albumYear"
+                android:id="@+id/adapterYear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
@@ -69,7 +68,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/albumRatingNumeric"
+        android:id="@+id/adapterRatingNumeric"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"

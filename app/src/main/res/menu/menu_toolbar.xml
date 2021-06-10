@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
-        android:id="@+id/myLibraryIcon"
-        android:icon="@drawable/ic_baseline_library_music_24"
-        android:title="@string/my_library"
+        android:id="@+id/basicSearchFragment"
+        android:icon="@drawable/ic_baseline_add_box_24"
+        android:title="@string/basic_search"
         app:showAsAction="ifRoom" />
+
     <item
-        android:id="@+id/signOutIcon"
+        android:id="@+id/advancedSearchFragment"
+        android:icon="@drawable/ic_baseline_library_music_24"
+        android:title="@string/advanced_search"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/signOut"
         android:icon="@drawable/ic_baseline_exit_to_app_24"
         android:title="@string/sign_out"
         app:showAsAction="always" />
+
 </menu>

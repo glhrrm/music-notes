@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/myLibraryNavigation"
+    app:startDestination="@id/basicSearchFragment">
+
+    <fragment
+        android:id="@+id/advancedSearchFragment"
+        android:name="br.edu.ifrs.musicnotes.fragment.AdvancedSearchFragment"
+        android:label="Minha biblioteca"
+        tools:layout="@layout/fragment_advanced_search">
+
+        <action
+            android:id="@+id/action_advancedSearchFragment_to_basicSearchFragment"
+            app:destination="@id/basicSearchFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/basicSearchFragment"
+        android:name="br.edu.ifrs.musicnotes.fragment.BasicSearchFragment"
+        android:label="Buscar álbum"
+        tools:layout="@layout/fragment_basic_search">
+
+        <action
+            android:id="@+id/action_basicSearchFragment_to_advancedSearchFragment"
+            app:destination="@id/advancedSearchFragment" />
+        <action
+            android:id="@+id/action_basicSearchFragment_to_reviewFragment"
+            app:destination="@id/reviewFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/reviewFragment"
+        android:name="br.edu.ifrs.musicnotes.fragment.ReviewFragment"
+        android:label="Nova avaliação"
+        tools:layout="@layout/fragment_review">
+
+        <action
+            android:id="@+id/action_reviewFragment_to_basicSearchFragment"
+            app:destination="@id/basicSearchFragment" />
+    </fragment>
+
+</navigation>

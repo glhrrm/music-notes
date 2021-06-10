@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,7 +45,6 @@ public class SpotifyAuthActivity extends AppCompatActivity {
             finishActivityWithResult();
             if (hasTokenExpired()) {
                 try {
-                    Log.d("status", "will refresh");
                     JSONObject tokenObject = refreshToken();
                     storeTokens(tokenObject);
                 } catch (IOException | JSONException e) {
