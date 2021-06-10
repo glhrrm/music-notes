@@ -17,27 +17,32 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Iterator;
 import java.util.List;
 
 import br.edu.ifrs.musicnotes.R;
 import br.edu.ifrs.musicnotes.helper.Firebase;
+import br.edu.ifrs.musicnotes.helper.Helper;
 import br.edu.ifrs.musicnotes.model.Album;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder> {
 
-    private Context mContext;
-    private List<Album> mAlbumList;
+    private Context context;
+    private List<Album> albums;
+    private ItemClickListener itemClickListener;
 
-    public AlbumAdapter(Context mContext, List<Album> mAlbumList) {
-        this.mContext = mContext;
-        this.mAlbumList = mAlbumList;
+    public AlbumAdapter(List<Album> albums, ItemClickListener itemClickListener) {
+        this.albums = albums;
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View item = LayoutInflater.from(mContext).inflate(R.layout.adapter_albums, parent, false);
+        context = parent.getContext();
+
+        View item = LayoutInflater.from(context)
+                .inflate(R.layout.adapter_album, parent, false);
+
         return new MyViewHolder(item);
     }
 
@@ -45,55 +50,28 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.setIsRecyclable(false);
 
-        Album album = mAlbumList.get(position);
-        setAlbumFromApi(holder, album);
-        setAlbumFromDatabase(holder, album);
+        Album album = albums.get(position);
+
+        holder.itemView.setOnClickListener(v -> itemClickListener.onItemClick(album));
+
+        showBasicData(holder, album);
+        showExtraData(holder, album);
     }
 
     @Override
     public int getItemCount() {
-        return mAlbumList.size();
+        return albums.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
-
-        TextView albumName, artistName, albumYear, albumInfoSeparator, albumRating;
-        ImageView albumCover;
-
-        public MyViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            albumName = itemView.findViewById(R.id.albumName);
-            artistName = itemView.findViewById(R.id.artistName);
-            albumInfoSeparator = itemView.findViewById(R.id.albumInfoSeparator);
-            albumYear = itemView.findViewById(R.id.albumYear);
-            albumCover = itemView.findViewById(R.id.albumCover);
-            albumRating = itemView.findViewById(R.id.albumRatingNumeric);
-        }
+    private void showBasicData(MyViewHolder holder, Album album) {
+        holder.title.setText(album.getTitle());
+        holder.artists.setText(Helper.stringBuilder(album.getArtists()));
+        holder.year.setText(String.valueOf(album.getYear()));
+        Glide.with(context).load(album.getImages().get("medium")).into(holder.cover);
     }
 
-    /*
-    Sets data from Spotify API passed through an Album bundle object to the adapter.
-    These data are not stored into the app database, i.e., album title, artists, year and images.
-     */
-    private void setAlbumFromApi(MyViewHolder holder, Album album) {
-        holder.albumName.setText(album.getTitle());
-
-        for (Iterator<String> artist = album.getArtists().iterator(); artist.hasNext(); ) {
-            holder.artistName.append(artist.next());
-            if (artist.hasNext()) holder.artistName.append(", ");
-        }
-
-        holder.albumYear.setText(String.valueOf(album.getYear()));
-
-        Glide.with(mContext).load(album.getImages().get("medium")).into(holder.albumCover);
-    }
-
-    /*
-    Sets album rating from database (app-exclusive data) passed through an Album object to the adapter.
-     */
-    private void setAlbumFromDatabase(MyViewHolder holder, Album album) {
-        Firebase.getAlbumsNode().child(album.getId())
+    private void showExtraData(MyViewHolder holder, Album album) {
+        Firebase.getAlbums().child(album.getId())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
@@ -101,8 +79,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
                         if (snapshot.exists()) {
                             Album album = snapshot.getValue(Album.class);
                             String albumIntegerRating = String.valueOf((int) (album.getRating() * 2));
-                            holder.albumRating.setText(albumIntegerRating);
-                            holder.albumRating.setVisibility(View.VISIBLE);
+                            holder.rating.setText(albumIntegerRating);
+                            holder.rating.setVisibility(View.VISIBLE);
                         }
                     }
 
@@ -111,5 +89,26 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
 
                     }
                 });
+    }
+
+    public interface ItemClickListener {
+        void onItemClick(Album album);
+    }
+
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+
+        TextView title, artists, year, separator, rating;
+        ImageView cover;
+
+        public MyViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            title = itemView.findViewById(R.id.adapterTitle);
+            artists = itemView.findViewById(R.id.adapterArtists);
+            separator = itemView.findViewById(R.id.adapterSeparator);
+            year = itemView.findViewById(R.id.adapterYear);
+            cover = itemView.findViewById(R.id.adapterCover);
+            rating = itemView.findViewById(R.id.adapterRatingNumeric);
+        }
     }
 }

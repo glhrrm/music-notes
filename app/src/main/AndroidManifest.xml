@@ -11,30 +11,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
-            android:name="br.edu.ifrs.musicnotes.activity.SplashActivity"
+            android:name=".activity.AuthActivity"
+            android:noHistory="true" />
+
+        <activity android:name=".services.SpotifyAuthActivity" />
+
+        <activity android:name=".activity.MainActivity" />
+
+        <activity
+            android:name=".activity.SplashActivity"
             android:theme="@style/Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="br.edu.ifrs.musicnotes.activity.MainActivity"
-            android:theme="@style/Fullscreen" />
-        <activity
-            android:name="br.edu.ifrs.musicnotes.activity.LoginActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name="br.edu.ifrs.musicnotes.activity.RegisterActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name="br.edu.ifrs.musicnotes.activity.SearchActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity android:name="br.edu.ifrs.musicnotes.activity.AlbumActivity" />
-        <activity
-            android:name="br.edu.ifrs.musicnotes.activity.SpotifyTokenActivity"
-            android:theme="@style/AppTheme" />
+
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />

@@ -16,7 +16,7 @@ public class Firebase {
         return authInstance;
     }
 
-    public static boolean isUserLogged() {
+    public static boolean isUserAuthenticated() {
         if (authInstance == null) {
             getAuthInstance();
         }
@@ -37,7 +37,7 @@ public class Firebase {
         return databaseReference;
     }
 
-    public static DatabaseReference getAlbumsNode() {
+    public static DatabaseReference getAlbums() {
         if (databaseReference == null) {
             getDatabaseReference();
         }
