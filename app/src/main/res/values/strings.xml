@@ -21,4 +21,12 @@
     <string name="confirm_password">Confirme a senha</string>
     <string name="fill_all_fields">Preencha todos os campos</string>
     <string name="basic_search">Busca simples</string>
+    <string name="tags">Tags</string>
+    <string name="rating">Nota</string>
+    <string name="date_min">De</string>
+    <string name="date_max">Até</string>
+    <string name="filters">Filtros</string>
+    <string name="year">Ano de lançamento</string>
+    <string name="updated_at">Data da avaliação</string>
+    <string name="check_flag">Marcar/desmarcar</string>
 </resources>
