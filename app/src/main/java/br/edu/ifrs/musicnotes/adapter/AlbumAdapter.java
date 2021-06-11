@@ -97,7 +97,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView title, artists, year, separator, rating;
+        TextView title, artists, year, rating;
         ImageView cover;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -105,7 +105,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
 
             title = itemView.findViewById(R.id.adapterTitle);
             artists = itemView.findViewById(R.id.adapterArtists);
-            separator = itemView.findViewById(R.id.adapterSeparator);
             year = itemView.findViewById(R.id.adapterYear);
             cover = itemView.findViewById(R.id.adapterCover);
             rating = itemView.findViewById(R.id.adapterRatingNumeric);
